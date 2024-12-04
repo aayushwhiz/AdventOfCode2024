@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 use std::fs::File;
-use std::i32;
 use std::io::{self, BufRead};
 use std::path::Path;
 
@@ -26,23 +25,26 @@ fn problem_1() -> io::Result<()> {
     let mut dist_sum = 0;
 
     if let Ok(lines) = read_lines(path) {
-        for line in lines {
-            if let Ok(l) = line {
-                let parts: Vec<&str> = l.split_whitespace().collect();
+        lines
+            .map_while(Result::ok)
+            .filter_map(|line| {
+                let parts: Vec<String> = line.split_whitespace().map(String::from).collect();
                 if parts.len() == 2 {
-                    if let (Ok(left_num), Ok(right_num)) =
-                        (parts[0].parse::<i32>(), parts[1].parse::<i32>())
-                    {
+                    Some((parts[0].parse::<i32>(), parts[1].parse::<i32>()))
+                } else {
+                    eprintln!("Invalid format on line: {}", line);
+                    None
+                }
+            })
+            .for_each(
+                |(left_result, right_result)| match (left_result, right_result) {
+                    (Ok(left_num), Ok(right_num)) => {
                         left.push(left_num);
                         right.push(right_num);
-                    } else {
-                        eprintln!("Error parsing numbers on line: {}", l);
                     }
-                } else {
-                    eprintln!("Invalid format on line: {}", l);
-                }
-            }
-        }
+                    _ => eprintln!("Error parsing numbers"),
+                },
+            );
     }
 
     left = merge_sort(left);
@@ -58,29 +60,32 @@ fn problem_1() -> io::Result<()> {
 }
 
 fn problem_2() -> io::Result<()> {
-    let path = "input.txt";
+    let path = "input/day1.txt";
 
     let mut left: Vec<i32> = Vec::new();
     let mut right: Vec<i32> = Vec::new();
 
     if let Ok(lines) = read_lines(path) {
-        for line in lines {
-            if let Ok(l) = line {
-                let parts: Vec<&str> = l.split_whitespace().collect();
+        lines
+            .map_while(Result::ok) // Extract Ok values, stop on the first Err.
+            .filter_map(|line| {
+                let parts: Vec<String> = line.split_whitespace().map(String::from).collect();
                 if parts.len() == 2 {
-                    if let (Ok(left_num), Ok(right_num)) =
-                        (parts[0].parse::<i32>(), parts[1].parse::<i32>())
-                    {
+                    Some((parts[0].parse::<i32>(), parts[1].parse::<i32>(), line))
+                } else {
+                    eprintln!("Invalid format on line: {}", line);
+                    None
+                }
+            })
+            .for_each(|(left_result, right_result, original_line)| {
+                match (left_result, right_result) {
+                    (Ok(left_num), Ok(right_num)) => {
                         left.push(left_num);
                         right.push(right_num);
-                    } else {
-                        eprintln!("Error parsing numbers on line: {}", l);
                     }
-                } else {
-                    eprintln!("Invalid format on line: {}", l);
+                    _ => eprintln!("Error parsing numbers on line: {}", original_line),
                 }
-            }
-        }
+            });
     }
 
     left = merge_sort(left);

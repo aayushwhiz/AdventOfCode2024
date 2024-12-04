@@ -1,6 +1,5 @@
 use regex::Regex;
 use std::fs::File;
-use std::i32;
 use std::io::{self, BufRead};
 
 const PROBLEM_NUMBER: i32 = 2;
@@ -19,7 +18,7 @@ pub fn run() -> io::Result<()> {
 fn problem_1() -> io::Result<()> {
     let input_file = "input/day3.txt";
 
-    let file = File::open(&input_file)?;
+    let file = File::open(input_file)?;
     let reader = io::BufReader::new(file);
 
     let mul_regex = Regex::new(r"mul\((\d+),(\d+)\)").unwrap();
@@ -45,7 +44,7 @@ fn problem_1() -> io::Result<()> {
 fn problem_2() -> io::Result<()> {
     let input_file = "input/day3.txt";
 
-    let file = File::open(&input_file)?;
+    let file = File::open(input_file)?;
     let reader = io::BufReader::new(file);
 
     let instruction_regex = Regex::new(r"(do\(\)|don't\(\)|mul\(\d+,\d+\))").unwrap();

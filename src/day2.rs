@@ -24,6 +24,8 @@ pub fn run() -> io::Result<()> {
             } else {
                 panic!("Invalid problem number");
             }
+        } else {
+            panic!("Invalid problem number");
         }
     }
 
@@ -48,7 +50,7 @@ fn is_safe(line: &str) -> bool {
 
     for i in 0..numbers.len() - 1 {
         let diff = (numbers[i + 1] - numbers[i]).abs();
-        if diff < 1 || diff > 3 {
+        if !(1..=3).contains(&diff) {
             differences_valid = false;
         }
         if numbers[i] >= numbers[i + 1] {
@@ -73,9 +75,12 @@ fn can_be_made_safe(line: &str) -> bool {
     }
 
     for i in 0..numbers.len() {
-        let mut modified_numbers = numbers.clone();
-        modified_numbers.remove(i);
-
+        let modified_numbers: Vec<_> = numbers
+            .iter()
+            .enumerate()
+            .filter(|&(index, _)| index != i)
+            .map(|(_, &num)| num)
+            .collect();
         if is_safe(
             &modified_numbers
                 .iter()
